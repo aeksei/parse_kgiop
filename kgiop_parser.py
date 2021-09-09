@@ -1,5 +1,4 @@
 import re
-import logging
 from typing import Optional
 
 from bs4.element import Tag
