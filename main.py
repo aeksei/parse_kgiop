@@ -17,7 +17,11 @@ OUTPUT_FILE = "kgiop_objects.json"
 
 
 async def main():
-    objects_list = await get_all_kgiop_objects()
+    objects_list = []
+    batch = 1000
+    for i in range(9):
+        objects_list = await get_all_kgiop_objects(i*batch, (i+1)*batch)
+
     to_json(objects_list)
 
 
@@ -66,4 +70,4 @@ def parse_kgiop_object(html: str, object_id: int) -> Optional[dict]:
 
 
 if __name__ == '__main__':
-    print(asyncio.run(main()))
+    asyncio.run(main())
