@@ -10,8 +10,7 @@ from bs4 import BeautifulSoup
 
 BASE_URL = "https://kgiop.gov.spb.ru/uchet/list_objects/"
 COORDS_PATTERN = re.compile(r"coords = \[.*?'\];")
-LAT_LON_PATTERN = re.compile(r"coords = \['(?P<lat>-?\d{1,2}\.\d*?\s*?)', '(?P<lon>-?\d{1,3}\.\d*?\s*?)'\];")  # lat lon
-
+LAT_LON_PATTERN = re.compile(r"coords = \['(?P<lat>\s*?-?\d{1,2}\.\d*?\s*?)', '(?P<lon>\s*?-?\d{1,3}\.\d*?\s*?)'\];")  # lat lon
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
