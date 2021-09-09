@@ -1,27 +1,14 @@
 import asyncio
-import logging
 from typing import Optional
 from random import randint
 
 import httpx
 
 import kgiop_parser
+from logger_config import get_logger
 
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-consoleHandler = logging.StreamHandler()
-consoleHandler.setLevel(logging.DEBUG)
-
-# create formatter
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-# add formatter to ch
-consoleHandler.setFormatter(formatter)
-
-# add ch to logger
-logger.addHandler(consoleHandler)
+logger = get_logger(__name__)
 
 HTTPX_CONNECT_TIMEOUT = None
 BASE_URL = "https://kgiop.gov.spb.ru/uchet/list_objects/"

@@ -5,23 +5,12 @@ from typing import Optional
 from bs4.element import Tag
 from bs4 import BeautifulSoup
 
+from logger_config import get_logger
+
 COORDS_PATTERN = re.compile(r"coords = \[.*?'\];")
 LAT_LON_PATTERN = re.compile(r"coords = \['(?P<lat>\s*?-?\d{1,2}\.\d*?\s*?)', '(?P<lon>\s*?-?\d{1,3}\.\d*?\s*?)'\];")  # lat lon
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-consoleHandler = logging.StreamHandler()
-consoleHandler.setLevel(logging.DEBUG)
-
-# create formatter
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-# add formatter to ch
-consoleHandler.setFormatter(formatter)
-
-# add ch to logger
-logger.addHandler(consoleHandler)
+logger = get_logger(__name__)
 
 
 def extract_tag_kgiop_object(html: str, object_id: int) -> Optional[Tag]:
