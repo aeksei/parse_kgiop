@@ -49,19 +49,19 @@ async def get_kgiop_object(object_id: int) -> Optional[dict]:
 
 
 def extract_tag_kgiop_object(html: str, object_id: int) -> Optional[Tag]:
-    tag = "div"
+    tag_name = "div"
     class_ = "layerobject_detail__content__data"
 
     soup = BeautifulSoup(html, "html.parser")
-    data = soup.find(tag, class_=class_)
+    tag = soup.find(tag_name, class_=class_)
 
-    if data is None:
-        logger.error(f"Tag {tag} class {class_} not found for object {object_id}")
+    if tag is None:
+        logger.error(f"Tag {tag_name} class {class_} not found for object {object_id}")
     else:
-        html = str(data)
+        html = str(tag)
         logger.debug(flat_html(html))
 
-    return data
+    return tag
 
 
 def get_kgiop_dict(tag: Tag) -> dict:
