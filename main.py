@@ -8,6 +8,8 @@ import httpx
 from bs4.element import Tag
 from bs4 import BeautifulSoup
 
+
+HTTPX_CONNECT_TIMEOUT = None
 BASE_URL = "https://kgiop.gov.spb.ru/uchet/list_objects/"
 COORDS_PATTERN = re.compile(r"coords = \[.*?'\];")
 LAT_LON_PATTERN = re.compile(r"coords = \['(?P<lat>\s*?-?\d{1,2}\.\d*?\s*?)', '(?P<lon>\s*?-?\d{1,3}\.\d*?\s*?)'\];")  # lat lon
@@ -29,22 +31,22 @@ logger.addHandler(consoleHandler)
 
 
 async def main():
-    tasks = [get_kgiop_object(object_id) for object_id in range(1, 100)]
+    tasks = [get_kgiop_object(object_id) for object_id in range(1, 1000)]
     return await asyncio.gather(*tasks)
 
 
 async def get_kgiop_object(object_id: int) -> Optional[dict]:
     url = f"{BASE_URL}{object_id}/"
 
-    logger.info(f"Object {object_id} loading started...")
+    logger.debug(f"Object {object_id} try loading started...")
     async with httpx.AsyncClient() as a_client:
-        await asyncio.sleep(randint(1, 10))
-        response = await a_client.get(url)
+        response = await a_client.get(url, timeout=HTTPX_CONNECT_TIMEOUT)
 
     if response.status_code == httpx.codes.NOT_FOUND:
         logger.error(f"Page {url} not found")
         return None
     elif response.status_code == httpx.codes.OK:
+        logger.info(f"Object {object_id} successful load")
         html = response.text
 
         tag = extract_tag_kgiop_object(html, object_id)
@@ -56,10 +58,12 @@ async def get_kgiop_object(object_id: int) -> Optional[dict]:
             coords = extract_coords(html, object_id)
             kgiop_dict["coords"] = coords
             kgiop_dict["id"] = object_id
-            logger.info(f"Object {object_id} successful load.")
             return kgiop_dict
+    elif response.status_code == httpx.codes.SERVICE_UNAVAILABLE:
+        await asyncio.sleep(randint(5, 60))
+        return await get_kgiop_object(object_id)  # recursion
     else:
-        logger.error(response)
+        logger.critical(response)  # unknown error
 
 
 def extract_tag_kgiop_object(html: str, object_id: int) -> Optional[Tag]:
