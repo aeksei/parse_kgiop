@@ -92,7 +92,7 @@ def get_kgiop_dict(tag: Tag) -> dict:
 def extract_coords(html: str, object_id: int) -> Optional[dict]:
     coords = COORDS_PATTERN.search(html)
     if not coords:
-        logger.warning(f"Parsed coords not found for object {object_id}.")
+        logger.warning(f"Parsed coords not found on page for object {object_id}.")
     else:
         coords = coords.group(0)
         logger.debug(f"Object {object_id} {coords}")
