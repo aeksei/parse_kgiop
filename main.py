@@ -50,7 +50,7 @@ def extract_tag_kgiop_object(html: str, object_id: int) -> Optional[Tag]:
     data = soup.find(tag, class_=class_)
 
     if data is None:
-        logger.error(f"Для объекта {object_id} данные не найдены.")
+        logger.error(f"Tag {tag} class {class_} not found for object {object_id}")
     else:
         html = str(data)
         logger.debug(flat_html(html))
@@ -71,14 +71,14 @@ def get_kgiop_dict(tag: Tag) -> dict:
 def extract_coords(html: str, object_id: int) -> Optional[dict]:
     coords = COORDS_PATTERN.search(html)
     if not coords:
-        logger.warning(f"Объект {object_id} не имеет координат.")
+        logger.warning(f"Parsed coords not found for object {object_id}.")
     else:
         coords = coords.group(0)
         logger.debug(coords)
 
         lat_lon = LAT_LON_PATTERN.search(coords)
         if not lat_lon:
-            logger.warning(f"Координаты для объекта {object_id} были найдены, но не были извлечены.")
+            logger.warning(f"Coords found for object {object_id} but not parsed.")
         else:
             return lat_lon.groupdict()
 
