@@ -62,8 +62,8 @@ def get_kgiop_dict(tag: Tag) -> dict:
     key_class = "layerobject_detail__content__data__key"
     value_class = "layerobject_detail__content__data__value"
 
-    keys = [key_tag.string for key_tag in tag.find_all("span", class_=key_class)]
-    values = [value_tag.string for value_tag in tag.find_all("span", class_=value_class)]
+    keys = [key_tag.string.strip() for key_tag in tag.find_all("span", class_=key_class)]
+    values = [value_tag.string.strip() for value_tag in tag.find_all("span", class_=value_class)]
 
     return dict(zip(keys, values))
 
