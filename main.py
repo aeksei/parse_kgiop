@@ -31,7 +31,7 @@ logger.addHandler(consoleHandler)
 async def get_kgiop_object(object_id: int) -> Optional[dict]:
     url = f"{BASE_URL}{object_id}/"
 
-    logger.info(f"Start load object {object_id}")
+    logger.info(f"Object {object_id} loading started...")
     async with httpx.AsyncClient() as a_client:
         response = await a_client.get(url)
     html = response.text
@@ -59,7 +59,7 @@ def extract_tag_kgiop_object(html: str, object_id: int) -> Optional[Tag]:
         logger.error(f"Tag {tag_name} class {class_} not found for object {object_id}")
     else:
         html = str(tag)
-        logger.debug(flat_html(html))
+        logger.debug(f"Object {object_id} {flat_html(html)}")
 
     return tag
 
@@ -80,7 +80,7 @@ def extract_coords(html: str, object_id: int) -> Optional[dict]:
         logger.warning(f"Parsed coords not found for object {object_id}.")
     else:
         coords = coords.group(0)
-        logger.debug(coords)
+        logger.debug(f"Object {object_id} {coords}")
 
         lat_lon = LAT_LON_PATTERN.search(coords)
         if not lat_lon:
