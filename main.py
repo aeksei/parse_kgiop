@@ -37,9 +37,15 @@ async def get_kgiop_object(object_id: int) -> Optional[dict]:
     html = response.text
 
     tag = extract_tag_kgiop_object(html, object_id)
-    kgiop_dict = get_kgiop_dict(tag)
-
-    coords = extract_coords(html, object_id)
+    if not tag:
+        logger.error(f"Object {object_id} not parsed.")
+        return None
+    else:
+        kgiop_dict = get_kgiop_dict(tag)
+        coords = extract_coords(html, object_id)
+        kgiop_dict["coords"] = coords
+        logger.info(f"Object {object_id} successful load.")
+        return kgiop_dict
 
 
 def extract_tag_kgiop_object(html: str, object_id: int) -> Optional[Tag]:
