@@ -2,6 +2,7 @@ import re
 import asyncio
 import logging
 from typing import Optional
+from random import randint
 
 import httpx
 from bs4.element import Tag
@@ -28,24 +29,38 @@ consoleHandler.setFormatter(formatter)
 logger.addHandler(consoleHandler)
 
 
+async def main():
+    tasks = [get_kgiop_object(object_id) for object_id in range(1, 100)]
+    return await asyncio.gather(*tasks)
+
+
 async def get_kgiop_object(object_id: int) -> Optional[dict]:
     url = f"{BASE_URL}{object_id}/"
 
     logger.info(f"Object {object_id} loading started...")
     async with httpx.AsyncClient() as a_client:
+        await asyncio.sleep(randint(1, 10))
         response = await a_client.get(url)
-    html = response.text
 
-    tag = extract_tag_kgiop_object(html, object_id)
-    if not tag:
-        logger.error(f"Object {object_id} not parsed.")
+    if response.status_code == httpx.codes.NOT_FOUND:
+        logger.error(f"Page {url} not found")
         return None
+    elif response.status_code == httpx.codes.OK:
+        html = response.text
+
+        tag = extract_tag_kgiop_object(html, object_id)
+        if not tag:
+            logger.error(f"Object {object_id} not parsed.")
+            return None
+        else:
+            kgiop_dict = get_kgiop_dict(tag)
+            coords = extract_coords(html, object_id)
+            kgiop_dict["coords"] = coords
+            kgiop_dict["id"] = object_id
+            logger.info(f"Object {object_id} successful load.")
+            return kgiop_dict
     else:
-        kgiop_dict = get_kgiop_dict(tag)
-        coords = extract_coords(html, object_id)
-        kgiop_dict["coords"] = coords
-        logger.info(f"Object {object_id} successful load.")
-        return kgiop_dict
+        logger.error(response)
 
 
 def extract_tag_kgiop_object(html: str, object_id: int) -> Optional[Tag]:
@@ -68,8 +83,8 @@ def get_kgiop_dict(tag: Tag) -> dict:
     key_class = "layerobject_detail__content__data__key"
     value_class = "layerobject_detail__content__data__value"
 
-    keys = [key_tag.string.strip() for key_tag in tag.find_all("span", class_=key_class)]
-    values = [value_tag.string.strip() for value_tag in tag.find_all("span", class_=value_class)]
+    keys = [key_tag.get_text(strip=True) for key_tag in tag.find_all("span", class_=key_class)]
+    values = [value_tag.get_text(strip=True) for value_tag in tag.find_all("span", class_=value_class)]
 
     return dict(zip(keys, values))
 
@@ -94,4 +109,5 @@ def flat_html(html: str) -> str:
 
 
 if __name__ == '__main__':
-    print(asyncio.run(get_kgiop_object(1)))
+    print(asyncio.run(main()))
+    # asyncio.run(get_kgiop_object(38))
