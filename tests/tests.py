@@ -1,7 +1,7 @@
 import unittest
 
-from main import extract_tag_kgiop_object, flat_html, get_kgiop_dict, extract_coords
-from main import LAT_LON_PATTERN
+from kgiop_parser import extract_tag_kgiop_object, flat_html, get_kgiop_dict, extract_coords
+from kgiop_parser import LAT_LON_PATTERN
 
 
 class BaseTestCases:
