@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from main import extract_tag_kgiop_object, flat_html, get_kgiop_dict
+from main import extract_tag_kgiop_object, flat_html, get_kgiop_dict, extract_coords
 
 
 HTML_KGIOP_OBJECT_WITH_COORDS = "kgiop_object_with_coords.html"
@@ -27,6 +27,8 @@ class TestKgiopObjectWithCoords(TestCase):
             'Вид объекта': 'Памятник'
         }
 
+        cls.coods = {'lat': '59.916595', 'lon': '30.312194'}
+
     def test_extract_tag_kgiop_object(self) -> None:
         tag = extract_tag_kgiop_object(self.html, self.object_id)
 
@@ -37,3 +39,7 @@ class TestKgiopObjectWithCoords(TestCase):
         kgiop_dict = get_kgiop_dict(tag)
 
         self.assertEqual(self.kgiop_dict, kgiop_dict)
+
+    def test_extract_coords(self) -> None:
+        coords = extract_coords(self.html, self.object_id)
+        self.assertEqual(self.coods, coords)
