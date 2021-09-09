@@ -1,6 +1,7 @@
 import unittest
 
 from main import extract_tag_kgiop_object, flat_html, get_kgiop_dict, extract_coords
+from main import LAT_LON_PATTERN
 
 
 class BaseTestCases:
@@ -63,3 +64,17 @@ class TestKgiopObjectBaseWithoutCoords(BaseTestCases.TestKgiopObjectBase):
     }
 
     COORDS = None
+
+
+class TestLatLonPattern(unittest.TestCase):
+
+    def test_lat_lon_pattern(self):
+        coords_str_list = [
+            "coords = ['59.917676 ', '30.315279'];",
+            "coords = ['59.913315', ' 30.298345'];",
+            "coords = ['59.9292402709', '30.3178074566'];",
+        ]
+
+        for coords in coords_str_list:
+            with self.subTest(coords=coords):
+                self.assertIsNotNone(LAT_LON_PATTERN.search(coords))
