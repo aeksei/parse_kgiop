@@ -1,5 +1,7 @@
 import unittest
 
+from bs4 import BeautifulSoup
+
 from kgiop_parser import extract_tag_kgiop_object, flat_html, get_kgiop_dict, extract_coords
 from kgiop_parser import LAT_LON_PATTERN
 
@@ -78,3 +80,16 @@ class TestLatLonPattern(unittest.TestCase):
         for coords in coords_str_list:
             with self.subTest(coords=coords):
                 self.assertIsNotNone(LAT_LON_PATTERN.search(coords))
+
+
+class TestGetKgiopDict(unittest.TestCase):
+
+    def test_whitespace_around_get_text(self):
+        # object_id = 2
+        content_data = """<div class="layerobject_detail__content__data"><span class="layerobject_detail__content__data__key">Наименование ансамбля</span><span class="layerobject_detail__content__data__value layerobject_detail__content__data--text">—</span><div class="layerobject_detail__content__data__hr"></div><span class="layerobject_detail__content__data__key">Наименование объекта</span><span class="layerobject_detail__content__data__value layerobject_detail__content__data--title">Здание манежа (экзерциргауса) лейб-гвардии Измайловского полка</span><div class="layerobject_detail__content__data__hr"></div><span class="layerobject_detail__content__data__key">Время возникновения объекта, основных перестроек</span><span class="layerobject_detail__content__data__value layerobject_detail__content__data--text">1795-1797</span><div class="layerobject_detail__content__data__hr"></div><span class="layerobject_detail__content__data__key">Местонахождение объекта</span><span class="layerobject_detail__content__data__value layerobject_detail__content__data--address">1-я Красноармейская ул., 13; Измайловский пр., 2-а</span><div class="layerobject_detail__content__data__hr"></div><span class="layerobject_detail__content__data__key">Категория историко-культурного значения объекта</span><span class="layerobject_detail__content__data__value layerobject_detail__content__data--text">объект культурного наследия регионального значения</span><div class="layerobject_detail__content__data__hr"></div><span class="layerobject_detail__content__data__key">Наименование и реквизиты нормативно-правового акта органа государственной власти о постановке объекта культурного наследия на государственную охрану</span><span class="layerobject_detail__content__data__value layerobject_detail__content__data--text">Закон <span class="nobr">Санкт-Петербурга</span> № 141-47 от 02.07.1997</span><div class="layerobject_detail__content__data__hr"></div><span class="layerobject_detail__content__data__key">Вид объекта</span><span class="layerobject_detail__content__data__value layerobject_detail__content__data--text">Памятник</span></div>"""
+        kgiop_dict_sample = {'Наименование ансамбля': '—', 'Наименование объекта': 'Здание манежа (экзерциргауса) лейб-гвардии Измайловского полка', 'Время возникновения объекта, основных перестроек': '1795-1797', 'Местонахождение объекта': '1-я Красноармейская ул., 13; Измайловский пр., 2-а', 'Категория историко-культурного значения объекта': 'объект культурного наследия регионального значения', 'Наименование и реквизиты нормативно-правового акта органа государственной власти о постановке объекта культурного наследия на государственную охрану': 'Закон Санкт-Петербурга № 141-47 от 02.07.1997', 'Вид объекта': 'Памятник'}
+
+        tag = BeautifulSoup(content_data, "html.parser")
+        kgiop_dict = get_kgiop_dict(tag)
+
+        self.assertEqual(kgiop_dict_sample, kgiop_dict)
