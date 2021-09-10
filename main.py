@@ -55,7 +55,7 @@ async def get_all_kgiop_objects(start_id: int = 1, end_id: int = 9670):
 def to_json(objects_list):
     objects_list = sorted(objects_list, key=lambda item: item["id"])
     with open(OUTPUT_FILE, "w") as f:
-        json.dump(objects_list, f, indent=4)
+        json.dump(objects_list, f, indent=4, ensure_ascii=False)
 
 
 def parse_kgiop_object(html: str, object_id: int) -> Optional[dict]:
