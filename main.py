@@ -32,7 +32,7 @@ async def get_kgiop_object(a_client, object_id: int) -> Optional[dict]:
         logger.info(f"Object {object_id} successful load")
         return parse_kgiop_object(response.text, object_id)
     elif response.status_code == httpx.codes.NOT_FOUND:
-        logger.error(f"Page {url} not found")
+        logger.warning(f"Page {url} not found")
         return None
     elif response.status_code == httpx.codes.SERVICE_UNAVAILABLE:
         await asyncio.sleep(randint(5, 60))
