@@ -48,7 +48,7 @@ def extract_coords(html: str, object_id: int) -> Optional[dict]:
 
         lat_lon = LAT_LON_PATTERN.search(coords)
         if not lat_lon:
-            logger.warning(f"Coords found for object {object_id} but not parsed.")
+            logger.error(f"Coords found for object {object_id} but not parsed.")
         else:
             return lat_lon.groupdict()
 
