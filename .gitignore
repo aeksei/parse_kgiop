@@ -1,4 +1,7 @@
 venv/
 .idea/
 
+logs/
 *.log
+
+*.json
