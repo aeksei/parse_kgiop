@@ -35,6 +35,7 @@ async def get_kgiop_object(a_client, object_id: int) -> Optional[dict]:
         logger.warning(f"Page {url} not found")
         return None
     elif response.status_code == httpx.codes.SERVICE_UNAVAILABLE:
+        logger.warning(f"Service unavailable. Get object {object_id} later.")
         await asyncio.sleep(randint(5, 60))
         return await get_kgiop_object(a_client, object_id)  # recursion
     else:
