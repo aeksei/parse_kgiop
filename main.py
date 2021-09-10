@@ -18,6 +18,7 @@ OUTPUT_FILE = "kgiop_objects.json"
 
 async def main():
     objects_list = await get_all_kgiop_objects()
+    objects_list = [obj for obj in objects_list if obj]  # filter None object
     to_json(objects_list)
 
 
@@ -48,7 +49,6 @@ async def get_all_kgiop_objects(start_id: int = 1, end_id: int = 9670):
 
     logger.info("End load all objects")
     return objects_list
-
 
 
 def to_json(objects_list):
