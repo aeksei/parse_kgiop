@@ -40,11 +40,15 @@ async def get_kgiop_object(a_client, object_id: int) -> Optional[dict]:
         logger.critical(response)  # unknown error
 
 
-async def get_all_kgiop_objects(start_id: int = 1, end_id: int = 8978):
+async def get_all_kgiop_objects(start_id: int = 1, end_id: int = 9670):
     logger.info("Start load all objects")
     async with httpx.AsyncClient() as a_client:
         tasks = [get_kgiop_object(a_client, object_id) for object_id in range(start_id, end_id)]
-        return await asyncio.gather(*tasks)
+        objects_list = await asyncio.gather(*tasks)
+
+    logger.info("End load all objects")
+    return objects_list
+
 
 
 def to_json(objects_list):
