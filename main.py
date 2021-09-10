@@ -17,20 +17,15 @@ OUTPUT_FILE = "kgiop_objects.json"
 
 
 async def main():
-    objects_list = []
-    batch = 1000
-    for i in range(9):
-        objects_list = await get_all_kgiop_objects(i*batch, (i+1)*batch)
-
+    objects_list = await get_all_kgiop_objects()
     to_json(objects_list)
 
 
-async def get_kgiop_object(object_id: int) -> Optional[dict]:
+async def get_kgiop_object(a_client, object_id: int) -> Optional[dict]:
     url = f"{BASE_URL}{object_id}/"
 
     logger.debug(f"Object {object_id} try loading started...")
-    async with httpx.AsyncClient() as a_client:
-        response = await a_client.get(url, timeout=HTTPX_CONNECT_TIMEOUT)
+    response = await a_client.get(url, timeout=HTTPX_CONNECT_TIMEOUT)
 
     if response.status_code == httpx.codes.OK:
         logger.info(f"Object {object_id} successful load")
@@ -40,14 +35,16 @@ async def get_kgiop_object(object_id: int) -> Optional[dict]:
         return None
     elif response.status_code == httpx.codes.SERVICE_UNAVAILABLE:
         await asyncio.sleep(randint(5, 60))
-        return await get_kgiop_object(object_id)  # recursion
+        return await get_kgiop_object(a_client, object_id)  # recursion
     else:
         logger.critical(response)  # unknown error
 
 
 async def get_all_kgiop_objects(start_id: int = 1, end_id: int = 8978):
-    tasks = [get_kgiop_object(object_id) for object_id in range(start_id, end_id)]
-    return await asyncio.gather(*tasks)
+    logger.info("Start load all objects")
+    async with httpx.AsyncClient() as a_client:
+        tasks = [get_kgiop_object(a_client, object_id) for object_id in range(start_id, end_id)]
+        return await asyncio.gather(*tasks)
 
 
 def to_json(objects_list):
